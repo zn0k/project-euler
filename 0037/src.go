@@ -49,25 +49,35 @@ func digits(n int) []int {
 	return result
 }
 
-func combinations(n int) []int {
+func variations(n int) []int {
 	var result []int
 	ds := digits(n)
-	l := len(ds)
-	for i := 0; i < l; i++ {
+	for i := 0; i < len(ds); i++ {
 		r := 0
-		for j, k := range ds {
+		s := ds[i:]
+		l := len(s)
+		for j, k := range s {
 			r += k * int((math.Pow10(l - j - 1)))
 		}
 		result = append(result, r)
-		ds = append(ds[1:], ds[0])
+
+		r = 0
+		s = ds[0 : len(ds)-i]
+		l = len(s)
+		for j, k := range s {
+			r += k * int((math.Pow10(l - j - 1)))
+		}
+		result = append(result, r)
 	}
 	return result
 }
 
-func check(p int, ps map[int]bool) bool {
-	cs := combinations(p)
-	for _, c := range cs {
-		_, ok := ps[c]
+func check(n int, ps map[int]bool) bool {
+	if n < 10 {
+		return false
+	}
+	for _, v := range variations(n) {
+		_, ok := ps[v]
 		if !ok {
 			return false
 		}
@@ -77,15 +87,16 @@ func check(p int, ps map[int]bool) bool {
 
 func main() {
 	primes := make(map[int]bool)
+
 	for _, p := range sieve(1_000_000) {
 		primes[p] = true
 	}
 
-	total := 0
+	sum := 0
 	for p := range primes {
 		if check(p, primes) {
-			total++
+			sum += p
 		}
 	}
-	fmt.Printf("%d\n", total)
+	fmt.Printf("%d\n", sum)
 }
