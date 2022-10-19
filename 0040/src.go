@@ -2,18 +2,31 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 )
+
+func digits(n int) []int {
+	var result []int
+
+	for n >= 10 {
+		result = append(result, n%10)
+		n /= 10
+	}
+	result = append(result, n)
+	for i := 0; i < len(result)/2; i++ {
+		j := len(result) - i - 1
+		result[i], result[j] = result[j], result[i]
+	}
+	return result
+}
 
 func fraction() chan int {
 	c := make(chan int)
-	var num int64 = 1
+	num := 1
 	go func() {
 		for {
-			s := strconv.FormatInt(num, 10)
-			for _, r := range s {
-				i, _ := strconv.ParseInt(string(r), 10, 32)
-				c <- int(i)
+			ds := digits(num)
+			for i := 0; i < len(ds); i++ {
+				c <- ds[i]
 			}
 			num++
 		}
